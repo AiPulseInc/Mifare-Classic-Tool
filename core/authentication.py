@@ -33,8 +33,11 @@ class AuthenticationManager:
             if not self.reader_manager.is_connected():
                 raise CardConnectionException("Reader not connected")
             
-            # Prepare load key command
-            command = APDUCommands.LOAD_AUTH_KEY + [key_slot] + list(key_data)
+            # Prepare load key command according to ACR1252U API
+            # The slot number is passed in the P2 field (4th byte)
+            command = APDUCommands.LOAD_AUTH_KEY.copy()
+            command[3] = key_slot
+            command += list(key_data)
             
             response, sw1, sw2 = self.reader_manager.send_apdu(command)
             

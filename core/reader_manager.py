@@ -103,19 +103,21 @@ class ReaderManager:
                 self._notify_status_change(ReaderStatus.ERROR)
                 return False
             
-            # Establish connection
+            # Establish connection to the reader
             self.connection = self.reader.createConnection()
             self.connection.connect()
-            
-            logger.info(f"Connected to reader: {self.reader}")
-            
-            # Get firmware version
-            self._get_firmware_version()
-            
-            # Start monitoring
-            self._start_monitoring()
-            
+
+            # Update status so that subsequent commands succeed
             self._notify_status_change(ReaderStatus.CONNECTED)
+
+            logger.info(f"Connected to reader: {self.reader}")
+
+            # Get firmware version now that the connection is active
+            self._get_firmware_version()
+
+            # Start monitoring thread
+            self._start_monitoring()
+
             return True
             
         except Exception as e:
